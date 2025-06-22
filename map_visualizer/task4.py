@@ -1,7 +1,6 @@
 import pandas as pd
 from shapely.geometry import LineString, Point
 
-# === Загрузка данных ===
 routes_file = "routes.xlsx"
 stops_file = "bus-stops.xlsx"
 
@@ -9,7 +8,7 @@ stops_file = "bus-stops.xlsx"
 DISTANCE_THRESHOLD_METERS = 50
 DEG_TO_M = 111139  # прибл. перевод градуса в метры
 
-# Загрузка маршрутов
+
 xls = pd.ExcelFile(routes_file)
 route_lines = []
 
@@ -21,7 +20,6 @@ for sheet in xls.sheet_names:
         line = LineString(df[["longitude", "latitude"]].values)
         route_lines.append((sheet, line))
 
-# Загрузка остановок
 stops_df = pd.read_excel(stops_file)
 stops_df = stops_df.dropna(subset=["latitude", "longitude"])
 
@@ -42,10 +40,8 @@ for route_id, line in route_lines:
 
 matched_df = pd.DataFrame(matched_stops)
 
-# === Группируем остановки по маршрутам ===
 route_stops = matched_df.groupby("route_id")["bus_stop_id"].apply(set).to_dict()
 
-# === Сравнение маршрутов попарно ===
 from itertools import combinations
 
 overlap_data = []
@@ -68,7 +64,7 @@ for (r1, s1), (r2, s2) in combinations(route_stops.items(), 2):
         "Дублируются": duplicate
     })
 
-# === Сохранение результата ===
+
 overlap_df = pd.DataFrame(overlap_data)
 overlap_df.to_excel("дублирующиеся_маршруты.xlsx", index=False)
 print("✅ Готово! Сохранено в файл: дублирующиеся_маршруты.xlsx")

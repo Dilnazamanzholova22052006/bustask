@@ -1,7 +1,7 @@
 import pandas as pd
 from shapely.geometry import LineString, Point
 
-# === Параметры ===
+
 routes_file = "routes.xlsx"
 stops_file = "bus-stops.xlsx"
 DISTANCE_THRESHOLD_METERS = 50
@@ -42,7 +42,7 @@ for route_id, line in route_lines:
                 }
             stop_routes[stop_id]["routes"].add(route_id)
 
-# === Создание итоговой таблицы ===
+
 records = []
 for stop_data in stop_routes.values():
     routes = sorted(list(stop_data["routes"]))
@@ -56,10 +56,9 @@ for stop_data in stop_routes.values():
 df_result = pd.DataFrame(records)
 df_result.sort_values("Количество маршрутов", ascending=False, inplace=True)
 
-# === Отдельно сохраняем пересадочные узлы (топ-10 или ≥ N маршрутов) ===
 top_hubs = df_result[df_result["Количество маршрутов"] >= df_result["Количество маршрутов"].max()]
 
-# === Сохраняем ===
+
 df_result.to_excel("пересадочные_узлы_все.xlsx", index=False)
 top_hubs.to_excel("топ_пересадочные_узлы.xlsx", index=False)
 

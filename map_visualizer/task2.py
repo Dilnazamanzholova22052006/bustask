@@ -2,7 +2,6 @@ import pandas as pd
 from shapely.geometry import LineString, Point
 from geopy.distance import geodesic
 
-# === Загрузка всех маршрутов ===
 xls = pd.ExcelFile("routes.xlsx")
 routes_list = []
 
@@ -16,14 +15,13 @@ for sheet_name in xls.sheet_names:
 routes_df = pd.concat(routes_list, ignore_index=True)
 routes_df = routes_df.dropna(subset=["latitude", "longitude"])
 
-# === Загрузка остановок ===
+
 bus_stops_df = pd.read_excel("bus-stops.xlsx")
 bus_stops_df = bus_stops_df.dropna(subset=["latitude", "longitude"])
 
-# === Порог расстояния (в метрах)
 DISTANCE_THRESHOLD_METERS = 50
 
-# === Сопоставление остановок с маршрутом (по близости к линии)
+
 matched_stops_geo = []
 
 for (route_id, direction), group in routes_df.groupby(['route_id', 'type']):
@@ -74,7 +72,7 @@ for (route_id, direction), group in matched_df.groupby(['route_id', 'direction']
         "length_km": round(segment_distance, 2)
     })
 
-# === Финальная таблица
+
 segment_df = pd.DataFrame(segment_summary)
 
 final_df = segment_df.pivot(index='route_id', columns='direction', values=['start_stop', 'end_stop', 'length_km'])
@@ -82,7 +80,6 @@ final_df.columns = ['_'.join(col).strip() for col in final_df.columns.values]
 final_df.reset_index(inplace=True)
 final_df['full_loop_km'] = final_df.get('length_km_forward', 0) + final_df.get('length_km_backward', 0)
 
-# === Сохранение
 final_df.to_excel("длины_всех_маршрутов.xlsx", index=False)
 print("✅ Сохранено: длины_всех_маршрутов.xlsx")
 # === Функция классификации маршрутов по длине
@@ -109,6 +106,6 @@ classification_df = final_df.groupby('Диапазон').agg({
 
 classification_df.columns = ['Диапазон', 'Перечень маршрутов', 'Количество маршрутов']
 
-# === Сохраняем результат
+
 classification_df.to_excel("классификация_маршрутов.xlsx", index=False)
 print("✅ Сохранено: классификация_маршрутов.xlsx")

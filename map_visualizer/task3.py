@@ -3,11 +3,10 @@ from shapely.geometry import LineString, Point
 from geopy.distance import geodesic
 import warnings
 
-# === Загрузка всех маршрутов ===
+
 routes_file = "routes.xlsx"
 bus_stops_file = "bus-stops.xlsx"
 
-# Прочитаем все листы маршрутов
 xls = pd.ExcelFile(routes_file)
 all_routes = []
 for sheet in xls.sheet_names:
@@ -17,12 +16,12 @@ for sheet in xls.sheet_names:
             df['route_id'] = sheet
             all_routes.append(df.dropna(subset=['latitude', 'longitude']))
         else:
-            print(f"⚠️ Лист '{sheet}' пропущен — нет нужных колонок")
+            print(f" Лист '{sheet}' пропущен — нет нужных колонок")
     except Exception as e:
-        print(f"⚠️ Ошибка чтения листа {sheet}: {e}")
+        print(f"шибка чтения листа {sheet}: {e}")
 
 if not all_routes:
-    raise ValueError("❌ Нет маршрутов с нужными колонками.")
+    raise ValueError(" Нет маршрутов с нужными колонками.")
 
 routes_df = pd.concat(all_routes, ignore_index=True)
 stops_df = pd.read_excel(bus_stops_file).dropna(subset=["latitude", "longitude"])
@@ -50,7 +49,7 @@ for (route_id, direction), group in routes_df.groupby(['route_id', 'type']):
 
 matched_df = pd.DataFrame(matched)
 if matched_df.empty:
-    raise ValueError("❌ Нет совпавших остановок с маршрутами.")
+    raise ValueError(" Нет совпавших остановок с маршрутами.")
 
 # === Расчёт расстояний между остановками ===
 segment_data = []
@@ -84,7 +83,7 @@ for (route_id, direction), group in matched_df.groupby(['route_id', 'direction']
             "med_dist_m": round(pd.Series(distances).median(), 1),
         })
     except Exception as e:
-        warnings.warn(f"⚠️ Ошибка в маршруте {route_id} ({direction}): {e}")
+        warnings.warn(f" Ошибка в маршруте {route_id} ({direction}): {e}")
         continue
 
 seg_df = pd.DataFrame(segment_data)
@@ -110,7 +109,6 @@ def classify_avg_distance(m):
 
 pivot_df['категория_средняя_дистанция'] = pivot_df['avg_dist_m_forward'].apply(classify_avg_distance)
 
-# === Сохраняем таблицу маршрутов ===
 pivot_df.to_excel("среднее_и_медианное_по_остановкам.xlsx", index=False)
 
 # === Группируем маршруты по категориям ===

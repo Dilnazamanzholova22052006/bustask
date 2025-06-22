@@ -3,7 +3,6 @@ import folium
 from folium.plugins import MarkerCluster
 from geopy.distance import geodesic
 
-# === Загружаем ВСЕ ЛИСТЫ из маршрутов ===
 xls = pd.ExcelFile("routes.xlsx")
 all_routes = []
 
@@ -14,19 +13,19 @@ for sheet_name in xls.sheet_names:
 
 routes_df = pd.concat(all_routes, ignore_index=True)
 
-# === Загружаем остановки ===
+
 stops_df = pd.read_excel("bus-stops.xlsx")
 
-# === Очищаем данные ===
+
 routes_clean = routes_df.dropna(subset=["latitude", "longitude"])
 stops_clean = stops_df.dropna(subset=["latitude", "longitude"])
 
-# === Центр карты ===
+
 center_lat = routes_clean['latitude'].mean()
 center_lon = routes_clean['longitude'].mean()
 m = folium.Map(location=[center_lat, center_lon], zoom_start=12)
 
-# === Остановки на карте ===
+
 marker_cluster = MarkerCluster().add_to(m)
 for _, row in stops_clean.iterrows():
     folium.Marker(
@@ -35,7 +34,7 @@ for _, row in stops_clean.iterrows():
         icon=folium.Icon(color='blue', icon='info-sign')
     ).add_to(marker_cluster)
 
-# === Маршруты и их длины ===
+
 results = []
 
 for (route_id, direction), group in routes_clean.groupby(['route_id', 'type']):

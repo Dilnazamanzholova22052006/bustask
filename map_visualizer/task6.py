@@ -58,7 +58,6 @@ for (route_id, direction), group in df_routes.groupby(['route_id', 'type']):
             if angle < ZIGZAG_ANGLE_THRESHOLD:
                 sharp_turns += 1
 
-        # Классификация
         if loop_dist <= DIST_THRESHOLD_LOOP_METERS:
             route_type = "кольцевой"
             comment = f"расстояние между началом и концом {int(loop_dist)} м"
@@ -76,7 +75,6 @@ for (route_id, direction), group in df_routes.groupby(['route_id', 'type']):
         "комментарий": comment
     })
 
-# === Сохраняем ===
 df_result = pd.DataFrame(result)
 df_result.to_excel("тип_маршрутов.xlsx", index=False)
 print("✅ Сохранено: тип_маршрутов.xlsx")
