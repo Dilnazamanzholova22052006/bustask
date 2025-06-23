@@ -18,7 +18,7 @@ for sheet in xls.sheet_names:
         else:
             print(f" Лист '{sheet}' пропущен — нет нужных колонок")
     except Exception as e:
-        print(f"шибка чтения листа {sheet}: {e}")
+        print(f"Ошибка чтения листа {sheet}: {e}")
 
 if not all_routes:
     raise ValueError(" Нет маршрутов с нужными колонками.")
